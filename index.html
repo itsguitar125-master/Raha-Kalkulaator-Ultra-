@@ -6,15 +6,23 @@
 <title>Raha Kalkulaator Ultra 2026 💰</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
-body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f5}
-.calc-card{background:#fff;padding:20px;border-radius:25px;width:90%;max-width:450px;box-shadow:0 10px 30px rgba(0,0,0,0.1);transition:transform 0.3s ease}
+body{display:flex;justify-content:center;align-items:flex-start;padding-top:40px;min-height:100vh;background:#f0f0f5}
+.calc-card{background:#fff;padding:25px;border-radius:25px;width:90%;max-width:450px;box-shadow:0 10px 30px rgba(0,0,0,0.1);transition:transform 0.3s ease}
 .calc-card:active{transform:scale(0.98)}
-input[type="number"]{width:100%;padding:15px;margin:10px 0;border-radius:12px;border:1px solid #ccc;font-size:1rem;transition:border 0.2s}
+input[type="number"]{width:100%;padding:15px;margin:12px 0;border-radius:12px;border:1px solid #ccc;font-size:1rem;transition:border 0.2s}
 input[type="number"]:focus{border-color:#007bff;outline:none}
-button{width:100%;padding:15px;margin-top:10px;border:none;border-radius:12px;background:#007bff;color:white;font-size:1rem;cursor:pointer;transition: background 0.3s, transform 0.2s}
+button{width:100%;padding:15px;margin-top:15px;border:none;border-radius:12px;background:#007bff;color:white;font-size:1rem;cursor:pointer;transition: background 0.3s, transform 0.2s}
 button:active{transform:scale(0.95);background:#0056b3}
-.result{margin-top:20px;font-size:1.2rem;text-align:center;color:#333;min-height:1.5em;transition:all 0.3s ease}
-.swipe-hint{text-align:center;font-size:0.8rem;color:#aaa;margin-top:10px}
+.result{margin-top:20px;font-size:1rem;text-align:left;color:#333;min-height:2em;transition:all 0.3s ease;line-height:1.5em}
+.list-item{opacity:0; transform:translateY(20px); transition:all 0.4s ease}
+.list-item.show{opacity:1; transform:translateY(0)}
+.menu-btn{position:fixed;bottom:25px;right:25px;background:#007bff;color:white;border:none;padding:18px;border-radius:50%;font-size:1.5rem;cursor:pointer;box-shadow:0 5px 15px rgba(0,0,0,0.2);transition:transform 0.2s}
+.menu-btn:active{transform:scale(0.9)}
+.menu-content{position:fixed;bottom:80px;right:25px;background:#fff;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.15);display:none;flex-direction:column;overflow:hidden}
+.menu-content button{background:#f7f7f7;color:#333;margin:0;border:none;border-bottom:1px solid #ddd;padding:12px;text-align:left;cursor:pointer}
+.menu-content button:last-child{border:none}
+.menu-content button:hover{background:#e0e0ff}
+.swipe-hint{text-align:center;font-size:0.8rem;color:#aaa;margin-top:12px}
 </style>
 </head>
 <body>
@@ -31,6 +39,13 @@ button:active{transform:scale(0.95);background:#0056b3}
   <div class="swipe-hint">Lükka vasakule/paremale, et nullida 🔄</div>
 </div>
 
+<button class="menu-btn" id="menuBtn">☰</button>
+<div class="menu-content" id="menuContent">
+  <button id="settingsBtn">⚙️ Seaded</button>
+  <button id="infoBtn">ℹ️ Info</button>
+  <button id="resetBtn">♻️ Nulli</button>
+</div>
+
 <script>
 const bruto = document.getElementById('bruto');
 const tulud = document.getElementById('tulud');
@@ -38,6 +53,23 @@ const kulud = document.getElementById('kulud');
 const resultDiv = document.getElementById('result');
 const calcBtn = document.getElementById('calcBtn');
 const card = document.getElementById('card');
+
+// Menu
+const menuBtn = document.getElementById('menuBtn');
+const menuContent = document.getElementById('menuContent');
+menuBtn.addEventListener('click',()=>menuContent.style.display = menuContent.style.display==='flex'?'none':'flex');
+
+// Menu buttons
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  bruto.value=''; tulud.value=''; kulud.value=''; resultDiv.innerHTML=''; menuContent.style.display='none';
+});
+document.getElementById('infoBtn').addEventListener('click',()=>{
+  alert("Raha Kalkulaator Ultra 2026 💰\n\nArvutab neto palga, tulud, kulud ja säästud Eesti 2026 maksudega.\nSwipe vasakule/paremale resetimiseks.\nFun vibes included 😎");
+  menuContent.style.display='none';
+});
+document.getElementById('settingsBtn').addEventListener('click',()=>{
+  alert("Seaded tulevad varsti... stay tuned 👀"); menuContent.style.display='none';
+});
 
 // Eesti 2026 maksud
 const tulumaksRate = 0.22; // 22%
@@ -51,7 +83,7 @@ function calcNetSalary(brutoSalary){
   return brutoSalary - tulumaks - unemploy;
 }
 
-function randomVibe(msg){
+function randomVibe(){
   const vibes = [
     "Oled nüüd rikkis 😎",
     "Pank imetleb sind 💸",
@@ -59,7 +91,18 @@ function randomVibe(msg){
     "Issand jumal bro, palju raha 🤯",
     "Võid juba chillida 🏖️"
   ];
-  return `${msg} — ${vibes[Math.floor(Math.random()*vibes.length)]}`;
+  return vibes[Math.floor(Math.random()*vibes.length)];
+}
+
+function showList(items){
+  resultDiv.innerHTML='';
+  items.forEach((item,i)=>{
+    let div = document.createElement('div');
+    div.className='list-item';
+    div.textContent=item;
+    resultDiv.appendChild(div);
+    setTimeout(()=>div.classList.add('show'), i*100);
+  });
 }
 
 calcBtn.addEventListener('click', () => {
@@ -70,25 +113,26 @@ calcBtn.addEventListener('click', () => {
   let netSalary = calcNetSalary(b);
   let totalIncome = netSalary + t;
   let remaining = totalIncome - k;
-  if(remaining < 0) remaining = 0;
+  if(remaining<0) remaining=0;
 
-  let budget = `
-Neto palk: €${netSalary.toFixed(2)}
-Kokku tulu: €${totalIncome.toFixed(2)}
-Kulud: €${k.toFixed(2)}
-Säästud: €${remaining.toFixed(2)}
-  `;
+  let items = [
+    `Neto palk: €${netSalary.toFixed(2)}`,
+    `Kokku tulu: €${totalIncome.toFixed(2)}`,
+    `Kulud: €${k.toFixed(2)}`,
+    `Säästud: €${remaining.toFixed(2)} 💰`,
+    randomVibe()
+  ];
 
-  resultDiv.textContent = randomVibe(budget);
+  showList(items);
 });
 
 // Swipe reset
 let startX = 0;
-card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-card.addEventListener('touchend', e => {
+card.addEventListener('touchstart', e=>{ startX=e.touches[0].clientX; });
+card.addEventListener('touchend', e=>{
   const endX = e.changedTouches[0].clientX;
-  if(Math.abs(startX - endX) > 50){
-    bruto.value=''; tulud.value=''; kulud.value=''; resultDiv.textContent='';
+  if(Math.abs(startX-endX)>50){
+    bruto.value=''; tulud.value=''; kulud.value=''; resultDiv.innerHTML='';
   }
 });
 </script>
