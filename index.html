@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="et">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Money Calc</title>
+<title>Rahakalkulaator 💰</title>
 <style>
-  /* Reset & basic styling */
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; }
+  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f7f7f7; }
 
-  /* Card container */
   .calc-card {
     background: #fff;
     padding: 20px;
@@ -22,7 +20,6 @@
 
   .calc-card:active { transform: scale(0.98); }
 
-  /* Inputs */
   input[type="number"] {
     width: 100%;
     padding: 15px;
@@ -35,7 +32,6 @@
 
   input[type="number"]:focus { border-color: #007bff; outline: none; }
 
-  /* Button */
   button {
     width: 100%;
     padding: 15px;
@@ -51,7 +47,6 @@
 
   button:active { transform: scale(0.95); background: #0056b3; }
 
-  /* Result */
   .result {
     margin-top: 20px;
     font-size: 1.3rem;
@@ -61,7 +56,6 @@
     transition: all 0.3s ease;
   }
 
-  /* Swipe hint */
   .swipe-hint {
     text-align: center;
     font-size: 0.8rem;
@@ -73,12 +67,12 @@
 <body>
 
 <div class="calc-card" id="card">
-  <h2 style="text-align:center;">💰 Money Calc</h2>
-  <input type="number" id="amount" placeholder="Enter amount ($)">
-  <input type="number" id="tax" placeholder="Enter tax %">
-  <button id="calcBtn">Calculate Total</button>
+  <h2 style="text-align:center;">💰 Rahakalkulaator</h2>
+  <input type="number" id="amount" placeholder="Sisesta summa (€)">
+  <input type="number" id="tax" placeholder="Sisesta käibemaks %">
+  <button id="calcBtn">Arvuta kokku</button>
   <div class="result" id="result"></div>
-  <div class="swipe-hint">Swipe left/right to reset 🔄</div>
+  <div class="swipe-hint">Lükka vasakule/paremale, et nullida 🔄</div>
 </div>
 
 <script>
@@ -88,28 +82,26 @@ const resultDiv = document.getElementById('result');
 const calcBtn = document.getElementById('calcBtn');
 const card = document.getElementById('card');
 
-// Calculate function
 calcBtn.addEventListener('click', () => {
   const amount = parseFloat(amountInput.value);
   const tax = parseFloat(taxInput.value);
   if(isNaN(amount) || isNaN(tax)) {
-    resultDiv.textContent = "Bruh, put some numbers 😅";
+    resultDiv.textContent = "Oi, numbrid peavad olema 🤯";
     return;
   }
   const total = amount + (amount * tax / 100);
-  resultDiv.textContent = `$${total.toFixed(2)} total`;
+  resultDiv.textContent = `Kokku: €${total.toFixed(2)} 💸`;
 });
 
-// Swipe reset for mobile
+// Swipe reset
 let startX = 0;
-
 card.addEventListener('touchstart', e => {
   startX = e.touches[0].clientX;
 });
 
 card.addEventListener('touchend', e => {
   const endX = e.changedTouches[0].clientX;
-  if(startX - endX > 50 || endX - startX > 50) {
+  if(Math.abs(startX - endX) > 50) {
     amountInput.value = '';
     taxInput.value = '';
     resultDiv.textContent = '';
