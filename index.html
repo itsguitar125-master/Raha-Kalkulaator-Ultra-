@@ -3,108 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rahakalkulaator 💰</title>
+<title>Raha Kalkulaator Ultra 💰</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-  body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f7f7f7; }
+* { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI',sans-serif; }
+body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f5; }
 
-  .calc-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-  }
+.calc-card {
+  background:#fff; padding:20px; border-radius:25px; width:90%; max-width:450px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s ease;
+}
+.calc-card:active { transform:scale(0.98); }
 
-  .calc-card:active { transform: scale(0.98); }
+input[type="number"] {
+  width:100%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #ccc; font-size:1rem; transition:border 0.2s;
+}
+input[type="number"]:focus { border-color:#007bff; outline:none; }
 
-  input[type="number"] {
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    transition: border 0.2s ease;
-  }
+button {
+  width:100%; padding:15px; margin-top:10px; border:none; border-radius:12px; background:#007bff; color:white; font-size:1rem;
+  cursor:pointer; transition: background 0.3s, transform 0.2s;
+}
+button:active { transform:scale(0.95); background:#0056b3; }
 
-  input[type="number"]:focus { border-color: #007bff; outline: none; }
+.result { margin-top:20px; font-size:1.2rem; text-align:center; color:#333; min-height:1.5em; transition:all 0.3s ease; }
 
-  button {
-    width: 100%;
-    padding: 15px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 12px;
-    background: #007bff;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-
-  button:active { transform: scale(0.95); background: #0056b3; }
-
-  .result {
-    margin-top: 20px;
-    font-size: 1.3rem;
-    text-align: center;
-    color: #333;
-    min-height: 1.5em;
-    transition: all 0.3s ease;
-  }
-
-  .swipe-hint {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #aaa;
-    margin-top: 10px;
-  }
+.swipe-hint { text-align:center; font-size:0.8rem; color:#aaa; margin-top:10px; }
 </style>
 </head>
 <body>
 
 <div class="calc-card" id="card">
-  <h2 style="text-align:center;">💰 Rahakalkulaator</h2>
-  <input type="number" id="amount" placeholder="Sisesta summa (€)">
-  <input type="number" id="tax" placeholder="Sisesta käibemaks %">
-  <button id="calcBtn">Arvuta kokku</button>
+  <h2 style="text-align:center;">💸 Raha Kalkulaator Ultra</h2>
+  
+  <input type="number" id="bruto" placeholder="Sisesta brutopalk (€)">
+  <input type="number" id="kulud" placeholder="Kulud kokku (€)">
+  <input type="number" id="tulud" placeholder="Tulud lisaks (€)">
+  <input type="number" id="km" placeholder="Käibemaks %">
+  
+  <button id="calcBtn">Arvuta 💰</button>
   <div class="result" id="result"></div>
   <div class="swipe-hint">Lükka vasakule/paremale, et nullida 🔄</div>
 </div>
 
 <script>
-const amountInput = document.getElementById('amount');
-const taxInput = document.getElementById('tax');
+const bruto = document.getElementById('bruto');
+const kulud = document.getElementById('kulud');
+const tulud = document.getElementById('tulud');
+const km = document.getElementById('km');
 const resultDiv = document.getElementById('result');
 const calcBtn = document.getElementById('calcBtn');
 const card = document.getElementById('card');
 
+function randomVibe(total){
+  const vibes = [
+    "Oled nüüd rikkis 😎",
+    "Pank imetleb sind 💸",
+    "Säästud level UP 🔥",
+    "Issand jumal bro, palju raha 🤯",
+    "Võid juba chillida 🏖️"
+  ];
+  return `${total} € — ${vibes[Math.floor(Math.random()*vibes.length)]}`;
+}
+
 calcBtn.addEventListener('click', () => {
-  const amount = parseFloat(amountInput.value);
-  const tax = parseFloat(taxInput.value);
-  if(isNaN(amount) || isNaN(tax)) {
-    resultDiv.textContent = "Oi, numbrid peavad olema 🤯";
-    return;
+  const b = parseFloat(bruto.value) || 0;
+  const k = parseFloat(kulud.value) || 0;
+  const t = parseFloat(tulud.value) || 0;
+  const tax = parseFloat(km.value) || 0;
+
+  let total = b + t - k; 
+  if(total < 0) total = 0;
+  total += total * tax / 100;
+
+  if(isNaN(total)) {
+    resultDiv.textContent = "Oi bro, vaja numbreid 🤯";
+  } else {
+    resultDiv.textContent = randomVibe(total.toFixed(2));
   }
-  const total = amount + (amount * tax / 100);
-  resultDiv.textContent = `Kokku: €${total.toFixed(2)} 💸`;
 });
 
 // Swipe reset
 let startX = 0;
-card.addEventListener('touchstart', e => {
-  startX = e.touches[0].clientX;
-});
-
+card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
 card.addEventListener('touchend', e => {
   const endX = e.changedTouches[0].clientX;
-  if(Math.abs(startX - endX) > 50) {
-    amountInput.value = '';
-    taxInput.value = '';
-    resultDiv.textContent = '';
+  if(Math.abs(startX - endX) > 50){
+    bruto.value=''; kulud.value=''; tulud.value=''; km.value=''; resultDiv.textContent='';
   }
 });
 </script>
